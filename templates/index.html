@@ -3,19 +3,26 @@
 	<title>Login</title>
 </head>
 <body>
-	<form action="/register">
+	<form action="/register" method="Post">
 		<p>First time register</p>
 		First name: <input type="text" name="first_name">
 		Last name: <input type="text" name="last_name">
-		Email: <input type="text" name="last_name">
+		Email: <input type="text" name="email">
 		Password: <input type="password" name="password">
 		<input type="submit" value="New User">
 	</form>
-	<form action="/login">
+	<form action="/login" method="Post">
 		<p>Login</p>
-		Email: <input type="text" name="last_name">
+		Email: <input type="text" name="email">
 		Password: <input type="password" name="password">
 		<input type="submit" value="Login">
+		 {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{message}}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 	</form>
 </body>
 </html>
