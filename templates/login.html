@@ -1,8 +1,48 @@
 <html>
 <head>
-	<title> </title>
+	<title>Blog</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+	<script type="text/javascript" src='{{ url_for('static', filename='js/bootstrap.min.js') }}'></script>
 </head>
 <body>
-	<h1>You have logged in</h1>
+	<div class="container">
+		<div class="row">
+			<div id="header">
+				<h3 class="header">CodingDojo Wall</h3>
+				<p class="header">Welcome: {{ users[0]['first_name'] }}</p>
+				<a class="header" href="index.html">log off</a>
+			</div>
+			<div id="message">
+				<form action="/messages" method="Post">
+					<h4>Post a message</h4>
+					<textarea id="message" name="message"></textarea>
+					<input type="submit" value="Post a message" class ="btn btn-primary" id="message">
+				</form>
+				{% for data in messages: %}
+				<p class = "message">{{ data['first_name'] }} </p>
+				<p class = "message">{{ data['last_name'] }}</p>
+				<p class = "message"> - {{ data['updated_at'] }}</p>
+				<p>{{ data['message'] }}</p>
+				<hr>
+				<div id ="comments">
+					{% for comment in comments: %}
+					{% if comment['message_id'] ==  data['m_id']: %}
+					<p class = "comments">{{ comment['first_name'] }} </p>
+					<p class = "comments">{{ comment['last_name'] }}</p>
+					<p class = "comments"> - {{ comment['updated_at'] }}</p>
+					<p>{{ comment['comment']}}</p>
+					{% endif %}
+					{% endfor %}
+				</div>
+				<form action="/comments/{{ data['m_id'] }}" method="Post">
+					<h4 id="comment">Post a comment</h4>
+					<textarea id="comment" name="comment"></textarea>
+					<input type="submit" value="Post a comment" class ="btn btn-success" id="comments">
+				</form>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
 </body>
 </html>

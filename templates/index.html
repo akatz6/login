@@ -1,28 +1,56 @@
 <html>
 <head>
 	<title>Login</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+	<script type="text/javascript" src='{{ url_for('static', filename='js/bootstrap.min.js') }}'></script>
 </head>
 <body>
-	<form action="/register" method="Post">
-		<p>First time register</p>
-		First name: <input type="text" name="first_name">
-		Last name: <input type="text" name="last_name">
-		Email: <input type="text" name="email">
-		Password: <input type="password" name="password">
-		<input type="submit" value="New User">
-	</form>
-	<form action="/login" method="Post">
-		<p>Login</p>
-		Email: <input type="text" name="email">
-		Password: <input type="password" name="password">
-		<input type="submit" value="Login">
-		 {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <p>{{message}}</p>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-	</form>
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-md-6" id="register">
+				<form action="/register" method="Post">
+					<h4>First time register</h4>
+					First name: <input type="text" name="first_name">
+					Last name: <input type="text" name="last_name">
+					Email: <input type="text" name="email">
+					Password: <input type="password" name="password">
+					<input type="submit" value="New User" class = "btn btn-primary">
+				</form>
+				{% with errors = get_flashed_messages(category_filter=["error"]) %}
+				{% if errors %}
+				<div class="alert-message block-message error">
+					<a class="close" href="#">×</a>
+					<ul>
+						{%- for msg in errors %}
+						<li>{{ msg }}</li>
+						{% endfor -%}
+					</ul>
+				</div>
+				{% endif %}
+				{% endwith %}
+			</div>
+			<div class="col-xs-12 col-md-6" id="login">
+				<form action="/login" method="Post">
+					<h4>Login</h4>
+					Email: <input type="text" name="email">
+					Password: <input type="password" name="password">
+					<input type="submit" value="Login" class = "btn btn-primary">
+					{% with success = get_flashed_messages(category_filter=["success"]) %}
+					{% if success %}
+					<div class="alert-message block-message error">
+						<a class="close" href="#">×</a>
+						<ul>
+							{%- for msg in success %}
+							<li>{{ msg }}</li>
+							{% endfor -%}
+						</ul>
+					</div>
+					{% endif %}
+					{% endwith %}
+				</div>
+			</form>
+		</div>
+	</div>
 </body>
 </html>
