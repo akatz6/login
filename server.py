@@ -9,16 +9,18 @@ mysql = MySQLConnector(app,'wall')
 bcrypt = Bcrypt(app)
 
 def allMessages():
-	return """SELECT *,  GROUP_CONCAT(comment SEPARATOR ',') AS all_comments
-	FROM   messages m
-	LEFT JOIN   comments c ON m.m_id = c.message_id 
-	JOIN users u on u.u_id = m.user_id
-	group by m.m_id"""
+	return """SELECT u.first_name, u.last_name, u.updated_at, m.message, 
+	 m.m_id
+	FROM  messages m
+	JOIN users u ON u.u_id = m.user_id
+	ORDER BY m.m_id DESC"""
 
 def allComments():
-	return """select * from comments 
-	JOIN users u on u.u_id = comments.user_id
-	group by comments.updated_at desc"""
+	return """SELECT u.first_name, u.last_name,c.updated_at, 
+	c.comment, c.message_id
+	FROM comments c
+	JOIN users u on u.u_id = c.user_id
+	ORDER BY c.updated_at DESC"""
 
 @app.route('/')
 def index():
@@ -54,7 +56,7 @@ def new_user():
 	if valid:
 		query = """INSERT INTO users (first_name, last_name, email, 
 		password, created_at, updated_at)VALUES
-		(:first_name, :last_name, :email, :password, NOW(), NOW())"""	
+		(:first_name, :last_name, :email, :password, CURDATE(), CURDATE()"""	
 		data = {
 		'first_name': first_name, 
 		'last_name':  last_name,
@@ -117,7 +119,7 @@ def messages():
 		user_id = user1[0]['u_id']
 		query = """INSERT INTO messages (user_id, message, created_at, updated_at)
 		VALUES
-		(:user_id, :message, NOW(), NOW())"""
+		(:user_id, :message, CURDATE(), CURDATE())"""
 		data = {
 		'user_id': user_id, 
 		'message':  message,
@@ -141,7 +143,7 @@ def comments(message_id):
 	if len(comment) > 0:
 		query = """INSERT INTO comments (message_id, user_id, comment, created_at,
 		updated_at) VALUES
-		(:message_id, :user_id, :comment, NOW(), NOW())"""
+		(:message_id, :user_id, :comment, CURDATE(), CURDATE())"""
 		data = { 
 		'message_id' : message_id,
 		'user_id': user_id, 
@@ -154,8 +156,5 @@ def comments(message_id):
 	comments = mysql.query_db(user_query, "")
 	return render_template('login.html',users = user, messages = messages,
 		comments = comments)
-
-
-
 
 app.run(debug=True)
