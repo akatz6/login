@@ -20,7 +20,7 @@ def allComments():
 	c.comment, c.message_id
 	FROM comments c
 	JOIN users u on u.u_id = c.user_id
-	ORDER BY c.updated_at DESC"""
+	ORDER BY c.updated_at"""
 
 @app.route('/')
 def index():
@@ -55,8 +55,8 @@ def new_user():
 
 	if valid:
 		query = """INSERT INTO users (first_name, last_name, email, 
-		password, created_at, updated_at)VALUES
-		(:first_name, :last_name, :email, :password, CURDATE(), CURDATE()"""	
+			password, created_at, updated_at)VALUES
+		(:first_name, :last_name, :email, :password, NOW(), NOW())"""	
 		data = {
 		'first_name': first_name, 
 		'last_name':  last_name,
@@ -111,15 +111,25 @@ def messages():
 	valid = True
 	message = request.form['message']
 	user = session['user']
-	
-	if len(message) > 0:
+	user_id = user[0]['u_id']
+	print user_id
+
+	query = """SELECT * FROM messages 
+	WHERE user_id =:user_id and message =:message"""
+	data = { 
+	'user_id': user_id, 
+	'message' : message
+	}
+	exists = mysql.query_db(query, data)
+
+	if len(message) > 0 and len(exists) < 1:
 		user_query = "SELECT u_id FROM users WHERE email = :email LIMIT 1"
 		query_data = { 'email': user[0]['email'] }
 		user1 = mysql.query_db(user_query, query_data)
 		user_id = user1[0]['u_id']
 		query = """INSERT INTO messages (user_id, message, created_at, updated_at)
 		VALUES
-		(:user_id, :message, CURDATE(), CURDATE())"""
+		(:user_id, :message, NOW(), NOW())"""
 		data = {
 		'user_id': user_id, 
 		'message':  message,
@@ -129,7 +139,7 @@ def messages():
 	messages = mysql.query_db(user_query, "")
 	user_query = allComments()
 	comments = mysql.query_db(user_query, "")
-	return render_template('login.html',users = user, messages = messages, 
+	return render_template('wall.html',users = user, messages = messages, 
 		comments = comments)
 
 
@@ -139,22 +149,32 @@ def comments(message_id):
 	comment = request.form['comment']
 	user_id = user[0]['u_id']
 	message_id = message_id
-	print message_id
-	if len(comment) > 0:
+	
+	query = """SELECT * FROM comments 
+	WHERE message_id = :message_id and user_id =:user_id and comment =:comment"""
+	data = { 
+	'message_id' : message_id,
+	'user_id': user_id, 
+	'comment' : comment
+	}
+	exists = mysql.query_db(query, data)
+
+	if len(comment) > 0 and len(exists) < 1:
 		query = """INSERT INTO comments (message_id, user_id, comment, created_at,
 		updated_at) VALUES
-		(:message_id, :user_id, :comment, CURDATE(), CURDATE())"""
+		(:message_id, :user_id, :comment, NOW(), NOW())"""
 		data = { 
 		'message_id' : message_id,
 		'user_id': user_id, 
 		'comment' : comment
 		}
 		mysql.query_db(query, data)
+		print "Why am I in here"
 	user_query = allMessages()
 	messages = mysql.query_db(user_query, "")
 	user_query = allComments()
 	comments = mysql.query_db(user_query, "")
-	return render_template('login.html',users = user, messages = messages,
+	return render_template('wall.html',users = user, messages = messages,
 		comments = comments)
 
 app.run(debug=True)
