@@ -9,7 +9,7 @@
 		min-height: 100px;
 		margin: 0 auto;
 		margin-top: 10px;
-		background-color: grey;
+		background-color: lightgrey;
 		padding-bottom: 300px;
 	}
 
@@ -47,6 +47,9 @@
 			margin-left: 60%;
 			display: inline-block;
 			margin-right: 10%;
+		}
+		form.header{
+			display: inline-block;
 		}
 
 		div#message{

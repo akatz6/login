@@ -97,8 +97,11 @@ def login():
 		user_query = allComments()
 		comments = mysql.query_db(user_query, "")
 		try:
+			print password
+			print user[0]['password']
 			bcrypt.check_password_hash(user[0]['password'], password)
-			return render_template('login.html', users = user, messages = messages, 
+			print password
+			return render_template('wall.html', users = user, messages = messages, 
 				comments = comments)
 		except:
 			flash("password does not match", "success")
@@ -176,5 +179,9 @@ def comments(message_id):
 	comments = mysql.query_db(user_query, "")
 	return render_template('wall.html',users = user, messages = messages,
 		comments = comments)
+
+@app.route('/logoff')
+def logff():
+	return render_template('index.html')
 
 app.run(debug=True)
